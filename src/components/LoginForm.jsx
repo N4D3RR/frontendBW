@@ -1,10 +1,8 @@
 import { useState } from "react"
 import { Form, Button, Alert, Spinner } from "react-bootstrap"
-import { useNavigate } from "react-router-dom"
 import apiFetch from "../services/api"
 
-const LoginForm = () => {
-  const navigate = useNavigate()
+const LoginForm = ({ onLogin }) => {
   const [formData, setFormData] = useState({ email: "", password: "" })
   const [err, setErr] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -23,8 +21,7 @@ const LoginForm = () => {
       body: JSON.stringify(formData),
     })
       .then((token) => {
-        localStorage.setItem("token", token)
-        navigate("/clienti")
+        onLogin(token)
       })
       .catch(() => setErr(true))
       .finally(() => setLoading(false))

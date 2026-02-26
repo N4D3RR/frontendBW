@@ -1,13 +1,13 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import { Navbar, Nav, Container, Button } from "react-bootstrap"
 
-function AppNavbar() {
+const AppNavbar = ({ onLogout }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const token = localStorage.getItem("token")
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
+    onLogout()
     navigate("/auth")
   }
 

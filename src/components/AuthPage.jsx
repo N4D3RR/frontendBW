@@ -3,7 +3,7 @@ import { Container, Tabs, Tab, Card } from "react-bootstrap"
 import LoginForm from "./LoginForm"
 import RegisterForm from "./RegisterForm"
 
-function AuthPage() {
+const AuthPage = ({ onLogin }) => {
   const [activeTab, setActiveTab] = useState("login")
 
   return (
@@ -16,7 +16,7 @@ function AuthPage() {
           className="mb-3"
         >
           <Tab eventKey="login" title="Login">
-            <LoginForm />
+            <LoginForm onLogin={onLogin} />
           </Tab>
           <Tab eventKey="register" title="Registrati">
             <RegisterForm onSuccess={() => setActiveTab("login")} />
