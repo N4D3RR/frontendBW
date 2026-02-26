@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react"
-import { Container } from "react-bootstrap"
+import { useEffect, useState } from "react"
+import { Container, Spinner, Alert } from "react-bootstrap"
 import ClientiFiltri from "./ClientiFiltri"
 import ClientiTable from "./ClientiTable"
 import apiFetch from "../services/api"
 
-function ClientiPage() {
+const ClientiPage = () => {
   const [clienti, setClienti] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [err, setErr] = useState(false)
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [filtri, setFiltri] = useState({
@@ -18,32 +18,32 @@ function ClientiPage() {
     dataInserimentoA: "",
   })
 
-  const fetchClienti = async (filtriAttivi = filtri, pagina = page) => {
+  const fetchClienti = (filtriAttivi = filtri, pagina = page) => {
     setLoading(true)
-    setError("")
+    setErr(false)
 
-    try {
-      // costruisce la query string solo con i filtri valorizzati
-      const params = new URLSearchParams({ page: pagina, size: 15 })
-      if (filtriAttivi.ragioneSociale)
-        params.append("ragioneSociale", filtriAttivi.ragioneSociale)
-      if (filtriAttivi.fatturatoMin)
-        params.append("fatturatoMin", filtriAttivi.fatturatoMin)
-      if (filtriAttivi.fatturatoMax)
-        params.append("fatturatoMax", filtriAttivi.fatturatoMax)
-      if (filtriAttivi.dataInserimentoDa)
-        params.append("dataInserimentoDa", filtriAttivi.dataInserimentoDa)
-      if (filtriAttivi.dataInserimentoA)
-        params.append("dataInserimentoA", filtriAttivi.dataInserimentoA)
+    const params = new URLSearchParams({ page: pagina, size: 15 })
+    if (filtriAttivi.ragioneSociale)
+      params.append("ragioneSociale", filtriAttivi.ragioneSociale)
+    if (filtriAttivi.fatturatoMin)
+      params.append("fatturatoMin", filtriAttivi.fatturatoMin)
+    if (filtriAttivi.fatturatoMax)
+      params.append("fatturatoMax", filtriAttivi.fatturatoMax)
+    if (filtriAttivi.dataInserimentoDa)
+      params.append("dataInserimentoDa", filtriAttivi.dataInserimentoDa)
+    if (filtriAttivi.dataInserimentoA)
+      params.append("dataInserimentoA", filtriAttivi.dataInserimentoA)
 
-      const data = await apiFetch(`/clienti?${params.toString()}`)
-      setClienti(data.content)
-      setTotalPages(data.totalPages)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
+    apiFetch(`/clienti?${params.toString()}`)
+      .then((data) => {
+        setClienti(data.content)
+        setTotalPages(data.totalPages)
+        setLoading(false)
+      })
+      .catch(() => {
+        setErr(true)
+        setLoading(false)
+      })
   }
 
   useEffect(() => {
@@ -71,20 +71,28 @@ function ClientiPage() {
 
   return (
     <Container className="mt-4">
-      <h3 className="mb-4">📋 Clienti</h3>
+      <h3 className="mb-4">Clienti</h3>
+
       <ClientiFiltri
         filtri={filtri}
         onFiltri={handleFiltri}
         onReset={handleReset}
       />
-      <ClientiTable
-        clienti={clienti}
-        loading={loading}
-        error={error}
-        page={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
+
+      {loading && <Spinner animation="border" variant="secondary" />}
+
+      {err && (
+        <Alert variant="danger">Errore nel caricamento dei clienti</Alert>
+      )}
+
+      {!loading && !err && (
+        <ClientiTable
+          clienti={clienti}
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      )}
     </Container>
   )
 }

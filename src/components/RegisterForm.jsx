@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Form, Button, Alert, Spinner } from "react-bootstrap"
 import apiFetch from "../services/api"
 
-function RegisterForm({ onSuccess }) {
+const RegisterForm = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
     nome: "",
     cognome: "",
@@ -10,34 +10,30 @@ function RegisterForm({ onSuccess }) {
     email: "",
     password: "",
   })
-  const [error, setError] = useState("")
+  const [err, setErr] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
-    setError("")
+    setErr(false)
     setLoading(true)
 
-    try {
-      await apiFetch("/auth/register", {
-        method: "POST",
-        body: JSON.stringify(formData),
-      })
-      onSuccess() // torna al tab login
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
+    apiFetch("/auth/register", {
+      method: "POST",
+      body: JSON.stringify(formData),
+    })
+      .then(() => onSuccess())
+      .catch(() => setErr(true))
+      .finally(() => setLoading(false))
   }
 
   return (
     <Form onSubmit={handleSubmit}>
-      {error && <Alert variant="danger">{error}</Alert>}
+      {err && <Alert variant="danger">Errore nella registrazione</Alert>}
 
       <Form.Group className="mb-3">
         <Form.Label>Nome</Form.Label>

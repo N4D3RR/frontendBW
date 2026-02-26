@@ -1,4 +1,4 @@
-import { Table, Spinner, Alert, Pagination, Badge } from "react-bootstrap"
+import { Table, Pagination, Badge, Alert } from "react-bootstrap"
 
 const statoBadge = (stato) => {
   switch (stato) {
@@ -13,21 +13,7 @@ const statoBadge = (stato) => {
   }
 }
 
-function FattureTable({
-  fatture,
-  loading,
-  error,
-  page,
-  totalPages,
-  onPageChange,
-}) {
-  if (loading)
-    return (
-      <div className="text-center mt-5">
-        <Spinner animation="border" />
-      </div>
-    )
-  if (error) return <Alert variant="danger">{error}</Alert>
+const FattureTable = ({ fatture, page, totalPages, onPageChange }) => {
   if (fatture.length === 0)
     return <Alert variant="info">Nessuna fattura trovata</Alert>
 

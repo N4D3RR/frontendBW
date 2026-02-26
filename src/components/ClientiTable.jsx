@@ -1,20 +1,6 @@
-import { Table, Spinner, Alert, Pagination, Badge } from "react-bootstrap"
+import { Table, Pagination, Badge, Alert } from "react-bootstrap"
 
-function ClientiTable({
-  clienti,
-  loading,
-  error,
-  page,
-  totalPages,
-  onPageChange,
-}) {
-  if (loading)
-    return (
-      <div className="text-center mt-5">
-        <Spinner animation="border" />
-      </div>
-    )
-  if (error) return <Alert variant="danger">{error}</Alert>
+const ClientiTable = ({ clienti, page, totalPages, onPageChange }) => {
   if (clienti.length === 0)
     return <Alert variant="info">Nessun cliente trovato</Alert>
 

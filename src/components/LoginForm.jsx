@@ -3,38 +3,36 @@ import { Form, Button, Alert, Spinner } from "react-bootstrap"
 import { useNavigate } from "react-router-dom"
 import apiFetch from "../services/api"
 
-function LoginForm() {
+const LoginForm = () => {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({ email: "", password: "" })
-  const [error, setError] = useState("")
+  const [err, setErr] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
-    setError("")
+    setErr(false)
     setLoading(true)
 
-    try {
-      const token = await apiFetch("/auth/login", {
-        method: "POST",
-        body: JSON.stringify(formData),
+    apiFetch("/auth/login", {
+      method: "POST",
+      body: JSON.stringify(formData),
+    })
+      .then((token) => {
+        localStorage.setItem("token", token)
+        navigate("/clienti")
       })
-      localStorage.setItem("token", token)
-      navigate("/clienti")
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
+      .catch(() => setErr(true))
+      .finally(() => setLoading(false))
   }
 
   return (
     <Form onSubmit={handleSubmit}>
-      {error && <Alert variant="danger">{error}</Alert>}
+      {err && <Alert variant="danger">Credenziali non valide</Alert>}
 
       <Form.Group className="mb-3">
         <Form.Label>Email</Form.Label>

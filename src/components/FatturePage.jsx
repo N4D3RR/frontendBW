@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react"
-import { Container } from "react-bootstrap"
+import { useEffect, useState } from "react"
+import { Container, Spinner, Alert } from "react-bootstrap"
 import FattureFiltri from "./FattureFiltri"
 import FattureTable from "./FattureTable"
 import apiFetch from "../services/api"
 
-function FatturePage() {
+const FatturePage = () => {
   const [fatture, setFatture] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [err, setErr] = useState(false)
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [filtri, setFiltri] = useState({
@@ -17,27 +17,28 @@ function FatturePage() {
     importoMax: "",
   })
 
-  const fetchFatture = async (filtriAttivi = filtri, pagina = page) => {
+  const fetchFatture = (filtriAttivi = filtri, pagina = page) => {
     setLoading(true)
-    setError("")
+    setErr(false)
 
-    try {
-      const params = new URLSearchParams({ page: pagina, size: 15 })
-      if (filtriAttivi.stato) params.append("stato", filtriAttivi.stato)
-      if (filtriAttivi.anno) params.append("anno", filtriAttivi.anno)
-      if (filtriAttivi.importoMin)
-        params.append("importoMin", filtriAttivi.importoMin)
-      if (filtriAttivi.importoMax)
-        params.append("importoMax", filtriAttivi.importoMax)
+    const params = new URLSearchParams({ page: pagina, size: 15 })
+    if (filtriAttivi.stato) params.append("stato", filtriAttivi.stato)
+    if (filtriAttivi.anno) params.append("anno", filtriAttivi.anno)
+    if (filtriAttivi.importoMin)
+      params.append("importoMin", filtriAttivi.importoMin)
+    if (filtriAttivi.importoMax)
+      params.append("importoMax", filtriAttivi.importoMax)
 
-      const data = await apiFetch(`/fatture?${params.toString()}`)
-      setFatture(data.content)
-      setTotalPages(data.totalPages)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
+    apiFetch(`/fatture?${params.toString()}`)
+      .then((data) => {
+        setFatture(data.content)
+        setTotalPages(data.totalPages)
+        setLoading(false)
+      })
+      .catch(() => {
+        setErr(true)
+        setLoading(false)
+      })
   }
 
   useEffect(() => {
@@ -59,20 +60,28 @@ function FatturePage() {
 
   return (
     <Container className="mt-4">
-      <h3 className="mb-4">🧾 Fatture</h3>
+      <h3 className="mb-4">Fatture</h3>
+
       <FattureFiltri
         filtri={filtri}
         onFiltri={handleFiltri}
         onReset={handleReset}
       />
-      <FattureTable
-        fatture={fatture}
-        loading={loading}
-        error={error}
-        page={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
+
+      {loading && <Spinner animation="border" variant="secondary" />}
+
+      {err && (
+        <Alert variant="danger">Errore nel caricamento delle fatture</Alert>
+      )}
+
+      {!loading && !err && (
+        <FattureTable
+          fatture={fatture}
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      )}
     </Container>
   )
 }
