@@ -13,12 +13,12 @@ import FatturePage from "./components/FatturePage"
 
 function AppContent() {
   const [token, setToken] = useState(localStorage.getItem("token"))
-  const navigate = useNavigate() // ← useNavigate deve stare DENTRO BrowserRouter
+  const navigate = useNavigate()
 
   const handleLogin = (newToken) => {
     localStorage.setItem("token", newToken)
     setToken(newToken)
-    navigate("/clienti") // ← redirect esplicito
+    navigate("/clienti") //  redirect esplicito o non cambia pagina
   }
 
   const handleLogout = () => {
