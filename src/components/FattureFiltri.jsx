@@ -1,8 +1,12 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Form, Button, Row, Col, Card } from "react-bootstrap"
 
 function FattureFiltri({ filtri, onFiltri, onReset }) {
   const [form, setForm] = useState(filtri)
+
+  useEffect(() => {
+    setForm(filtri)
+  }, [filtri])
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -11,6 +15,11 @@ function FattureFiltri({ filtri, onFiltri, onReset }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     onFiltri(form)
+  }
+
+  const handleResetClick = () => {
+    onReset()
+    setForm({ stato: "", anno: "", importoMin: "", importoMax: "" })
   }
 
   return (
@@ -65,7 +74,7 @@ function FattureFiltri({ filtri, onFiltri, onReset }) {
             type="button"
             variant="outline-secondary"
             size="sm"
-            onClick={onReset}
+            onClick={handleResetClick}
           >
             ✖ Reset
           </Button>

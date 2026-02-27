@@ -79,7 +79,13 @@ const ClientiPage = () => {
         onReset={handleReset}
       />
 
-      {loading && <Spinner animation="border" variant="secondary" />}
+      {loading && (
+        <Spinner
+          animation="border"
+          variant="secondary"
+          className="text-center"
+        />
+      )}
 
       {err && (
         <Alert variant="danger">Errore nel caricamento dei clienti</Alert>

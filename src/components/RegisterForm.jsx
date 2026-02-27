@@ -10,7 +10,7 @@ const RegisterForm = ({ onSuccess }) => {
     email: "",
     password: "",
   })
-  const [err, setErr] = useState(false)
+  const [errMsg, setErrMsg] = useState("")
   const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => {
@@ -19,7 +19,7 @@ const RegisterForm = ({ onSuccess }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setErr(false)
+    setErrMsg("")
     setLoading(true)
 
     apiFetch("/auth/register", {
@@ -27,13 +27,13 @@ const RegisterForm = ({ onSuccess }) => {
       body: JSON.stringify(formData),
     })
       .then(() => onSuccess())
-      .catch(() => setErr(true))
+      .catch((errMsg) => setErrMsg(errMsg.message))
       .finally(() => setLoading(false))
   }
 
   return (
     <Form onSubmit={handleSubmit}>
-      {err && <Alert variant="danger">Errore nella registrazione</Alert>}
+      {errMsg && <Alert variant="danger">{errMsg}</Alert>}
 
       <Form.Group className="mb-3">
         <Form.Label>Nome</Form.Label>
@@ -44,7 +44,6 @@ const RegisterForm = ({ onSuccess }) => {
           required
         />
       </Form.Group>
-
       <Form.Group className="mb-3">
         <Form.Label>Cognome</Form.Label>
         <Form.Control
@@ -54,7 +53,6 @@ const RegisterForm = ({ onSuccess }) => {
           required
         />
       </Form.Group>
-
       <Form.Group className="mb-3">
         <Form.Label>Username</Form.Label>
         <Form.Control
@@ -64,7 +62,6 @@ const RegisterForm = ({ onSuccess }) => {
           required
         />
       </Form.Group>
-
       <Form.Group className="mb-3">
         <Form.Label>Email</Form.Label>
         <Form.Control
@@ -75,7 +72,6 @@ const RegisterForm = ({ onSuccess }) => {
           required
         />
       </Form.Group>
-
       <Form.Group className="mb-3">
         <Form.Label>Password</Form.Label>
         <Form.Control
@@ -86,7 +82,6 @@ const RegisterForm = ({ onSuccess }) => {
           required
         />
       </Form.Group>
-
       <Button
         type="submit"
         variant="success"

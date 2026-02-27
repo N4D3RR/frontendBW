@@ -16,7 +16,13 @@ function apiFetch(endpoint, options = {}) {
         .json()
         .catch(() => ({ message: "Errore sconosciuto" }))
         .then((error) => {
-          throw new Error(error.message || "Errore nella richiesta")
+          const errMsg = error.message || "Errore nella richiesta"
+          const errList =
+            Array.isArray(error.errorsMessages) &&
+            error.errorsMessages.length > 0
+              ? "\n" + error.errorsMessages.join("\n")
+              : ""
+          throw new Error(errMsg + errList)
         })
     }
 

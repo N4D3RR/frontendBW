@@ -19,7 +19,7 @@ const FattureTable = ({ fatture, page, totalPages, onPageChange }) => {
 
   return (
     <>
-      <Table striped bordered hover responsive>
+      <Table>
         <thead className="table-dark">
           <tr>
             <th>Numero</th>
